@@ -10,5 +10,16 @@ package co.com.intempo.banco.clinteGasDTO;
  * @author Dmoviliza
  */
 public class BodyResponse {
+    private ResultadoConsulta resultadoConsulta;
+
+    public ResultadoConsulta getResultadoConsulta() {
+        return resultadoConsulta;
+    }
+
+    public void setResultadoConsulta(ResultadoConsulta resultadoConsulta) {
+        this.resultadoConsulta = resultadoConsulta;
+    }
+    
+    
     
 }

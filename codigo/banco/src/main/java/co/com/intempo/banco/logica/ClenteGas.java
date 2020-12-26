@@ -7,9 +7,19 @@ package co.com.intempo.banco.logica;
 
 import co.com.intempo.banco.clinteGasDTO.Body;
 import co.com.intempo.banco.clinteGasDTO.Envelope;
+import co.com.intempo.banco.clinteGasDTO.EnvelopeResponse;
 import co.com.intempo.banco.clinteGasDTO.ReferenciaFactura;
 import co.com.intempo.banco.dto.MensajeDTO;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import javax.ejb.Stateless;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  *
@@ -18,12 +28,28 @@ import javax.ejb.Stateless;
 @Stateless
 public class ClenteGas implements ConeccionClientePago {
 
-    public static String URL_AGUA = "http://130.211.116.156:80/gas-service/PagosService/";
+    public static String URL_AGUA = "http://130.211.116.156/gas-service/PagosService";
+
+    private static final String ACCION_CONSULTAR = "consultar";
 
     @Override
     public Double consultarFactura(Long idFactura) {
-
-        return null;
+        try {
+            Envelope env = new Envelope();
+            env.setBody(new Body());
+            env.getBody().setReferenciaFactura(new ReferenciaFactura());
+            env.getBody().getReferenciaFactura().setReferenciaFactura(idFactura.toString());
+            
+            EnvelopeResponse response = consumirServicio(env, URL_AGUA, ACCION_CONSULTAR);
+            if (response == null) {
+                return null;
+            }
+            
+            return response.getBody().getResultadoConsulta().getTotalPagar();
+        } catch (Exception ex) {
+             System.err.println("No se pudo consumir el servicio de consulta de factura");
+            return 0D;
+        }
     }
 
     @Override
@@ -31,20 +57,48 @@ public class ClenteGas implements ConeccionClientePago {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void cargaArchivoComparendos(Long datos, String endpoint) throws Exception {
-        //RespuestaSimitDTO respuesta = new RespuestaSimitDTO();
-        //respuesta.setEndpoint(endpoint);
-        //crear el envelope
-        Envelope env = new Envelope();
-        env.setBody(new Body());
-        env.getBody().setReferenciaFactura(new ReferenciaFactura());
-        /*
-        EnvelopeResponse response = consumirServicio(env, endpoint, ACCION_CARGAARCHIVOCOMPARENDO, respuesta);
-        if (response == null) {
-            return null;
+    private EnvelopeResponse consumirServicio(Envelope request, String endpoint, String accion)
+            throws Exception {
+        JAXBContext jaxbrequest = JAXBContext.newInstance(Envelope.class);
+        JAXBContext jaxbresponse = JAXBContext.newInstance(EnvelopeResponse.class);
+
+        Marshaller marshaller = jaxbrequest.createMarshaller();
+        HttpURLConnection connection = null;
+        try {
+            //Create connection
+            URL url = new URL(endpoint);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
+            connection.setRequestProperty("Accept-Encoding", "text/plain");
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            connection.setRequestProperty("User-Agent", "Apache-HttpClient/4.1.1 (java 1.5)");
+            connection.setRequestProperty("SOAPAction", accion);
+
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            marshaller.marshal(request, baos);//connection.getOutputStream()
+            marshaller.marshal(request, connection.getOutputStream());
+
+            Unmarshaller unmarshaller = jaxbresponse.createUnmarshaller();
+            try (InputStream is = connection.getInputStream();) {
+                Object response = unmarshaller.unmarshal(is);
+                return ((EnvelopeResponse) response);
+            }
+        } catch (SocketTimeoutException ex) {
+            System.err.println("No se pudo completar el envio por intermitencia del servicio");
+        } catch (SocketException ex) {
+            System.err.println(ex.getMessage());
+        } catch (Exception e) {
+             System.err.println(e.getMessage());
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-        respuesta.setRespuesta(response.getBody().getCargaArchivoComparendosResponse().getRespuesta());
-        return respuesta;
-        */
+        return null;
     }
 }

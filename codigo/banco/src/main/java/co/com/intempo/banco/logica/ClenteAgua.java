@@ -86,8 +86,7 @@ public class ClenteAgua implements ConeccionClientePago {
                 .header(CONTENT_TYPE, APPLICATION_JSON)
                 .post(ClientResponse.class, gjson.toJson(facturaIn));
 
-        if (response != null
-                && CODIGO_404.equals(response.getStatus())) {
+        if (response != null) {
             String json = response.getEntity(String.class);
             System.err.println("json " + json);
             output = gjson.fromJson(json, RespuestaDTO.class);

@@ -15,28 +15,27 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class ConvenioLogica {
-    
+
     //@EJB
     //private ClenteAgua clenteAgua;
-    
-    public Double consultarValorFactura(ConvenioDTO convenioDTO, Long idFactura){
-        ClenteAgua clenteAgua= new ClenteAgua();
-                
-        if(convenioDTO.getCompesancionPago()){
+    public Double consultarValorFactura(ConvenioDTO convenioDTO, Long idFactura) {
+
+        if (convenioDTO.getCompesancionPago()) {
+            ClenteAgua clenteAgua = new ClenteAgua();
             return clenteAgua.consultarFactura(idFactura);
-        }else{
-            
+        } else {
+            ClenteGas clenteGas = new ClenteGas();
+            return clenteGas.consultarFactura(idFactura);
         }
-        return 0D;
     }
-    
-        public MensajeDTO pagarFacTura(ConvenioDTO convenioDTO, Long idFactura, Double valorFactura){
-        ClenteAgua clenteAgua= new ClenteAgua();
-                
-        if(convenioDTO.getCompesancionPago()){
+
+    public MensajeDTO pagarFacTura(ConvenioDTO convenioDTO, Long idFactura, Double valorFactura) {
+        ClenteAgua clenteAgua = new ClenteAgua();
+
+        if (convenioDTO.getCompesancionPago()) {
             return clenteAgua.pagarFactura(idFactura, valorFactura);
-        }else{
-            
+        } else {
+
         }
         return null;
     }
