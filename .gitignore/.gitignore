@@ -1,0 +1,14 @@
+*.log
+multas/target
+nb-configuration.xml
+.idea/
+*.iml
+*.class
+/bin
+.settings/
+.dbeaver-data-sources.xml
+.project
+.classpath
+.tern-project
+/target/
+/.metadata/
