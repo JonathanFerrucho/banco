@@ -19,4 +19,15 @@ public class ConvenioDTO {
     private Long id;
     private String nombreConvenio;
     private Boolean compesancionPago;
+
+    public ConvenioDTO() {
+    }
+    
+    public ConvenioDTO(Long id, String nombreConvenio, Boolean compesancionPago) {
+        this.id = id;
+        this.nombreConvenio = nombreConvenio;
+        this.compesancionPago = compesancionPago;
+    }
+    
+    
 }

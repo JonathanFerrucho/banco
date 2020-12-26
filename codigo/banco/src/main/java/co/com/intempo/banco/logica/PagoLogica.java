@@ -5,6 +5,7 @@
  */
 package co.com.intempo.banco.logica;
 
+import co.com.intempo.banco.dto.ConvenioDTO;
 import co.com.intempo.banco.dto.MensajeDTO;
 import co.com.intempo.banco.dto.PagoDTO;
 import co.com.intempo.banco.dto.UsuarioDTO;
@@ -34,7 +35,18 @@ public class PagoLogica {
             return mensajeDTO;
         }
 
-        Double valorFactura = convenioLogica.consultarValorFactura(pagoDTO.getConvenio(), pagoDTO.getNumeroReferencia());
+        ConvenioDTO convenioDTO = convenioLogica.obtner(pagoDTO.getConvenio().getId());
+        if (convenioDTO == null) {
+            mensajeDTO.setMensaje("Convenio no registrado");
+            return mensajeDTO;
+        }
+
+        Double valorFactura = convenioLogica.consultarValorFactura(convenioDTO, pagoDTO.getNumeroReferencia());
+        if (valorFactura == null) {
+            mensajeDTO.setMensaje("Error no se pudo obtener la factura");
+            return mensajeDTO;
+
+        }
 
         Double saldo = usuarioLogica.obtnerSaldo(usuarioId);
         if (saldo == null || saldo <= 0L
@@ -43,6 +55,6 @@ public class PagoLogica {
             return mensajeDTO;
         }
 
-        return convenioLogica.pagarFacTura(pagoDTO.getConvenio(), pagoDTO.getNumeroReferencia(), valorFactura);
+        return convenioLogica.pagarFacTura(convenioDTO, pagoDTO.getNumeroReferencia(), valorFactura);
     }
 }
