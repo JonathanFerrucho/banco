@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlElement;
 public class ReferenciaFactura {
     private String referenciaFactura;
     
-    @XmlElement(name = "referenciaFactura", namespace = "http://www.w3.org/2001/XMLSchema")
+    @XmlElement(name = "referenciaFactura", namespace = "http://www.servicios.co/pagos/schemas")
     public String getReferenciaFactura() {
         return referenciaFactura;
     }

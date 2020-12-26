@@ -28,7 +28,7 @@ import javax.xml.bind.Unmarshaller;
 @Stateless
 public class ClenteGas implements ConeccionClientePago {
 
-    public static String URL_AGUA = "http://130.211.116.156/gas-service/PagosService";
+    public static String URL_AGUA = "http://130.211.116.156:80/gas-service/PagosService";
 
     private static final String ACCION_CONSULTAR = "consultar";
 
@@ -39,15 +39,15 @@ public class ClenteGas implements ConeccionClientePago {
             env.setBody(new Body());
             env.getBody().setReferenciaFactura(new ReferenciaFactura());
             env.getBody().getReferenciaFactura().setReferenciaFactura(idFactura.toString());
-            
+
             EnvelopeResponse response = consumirServicio(env, URL_AGUA, ACCION_CONSULTAR);
             if (response == null) {
                 return null;
             }
-            
+
             return response.getBody().getResultadoConsulta().getTotalPagar();
         } catch (Exception ex) {
-             System.err.println("No se pudo consumir el servicio de consulta de factura");
+            System.err.println("No se pudo consumir el servicio de consulta de factura");
             return 0D;
         }
     }
@@ -70,7 +70,8 @@ public class ClenteGas implements ConeccionClientePago {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
-            connection.setRequestProperty("Accept-Encoding", "text/plain");
+            connection.setRequestProperty("Accept-Encoding", "gzip,deflate,text/plain");
+            connection.setRequestProperty("Host", "130.211.116.156:80");
             connection.setRequestProperty("Connection", "Keep-Alive");
             connection.setRequestProperty("User-Agent", "Apache-HttpClient/4.1.1 (java 1.5)");
             connection.setRequestProperty("SOAPAction", accion);
@@ -81,6 +82,7 @@ public class ClenteGas implements ConeccionClientePago {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             marshaller.marshal(request, baos);//connection.getOutputStream()
+            System.err.println(new String(baos.toByteArray()));
             marshaller.marshal(request, connection.getOutputStream());
 
             Unmarshaller unmarshaller = jaxbresponse.createUnmarshaller();
@@ -91,9 +93,9 @@ public class ClenteGas implements ConeccionClientePago {
         } catch (SocketTimeoutException ex) {
             System.err.println("No se pudo completar el envio por intermitencia del servicio");
         } catch (SocketException ex) {
-            System.err.println(ex.getMessage());
+            System.err.println(ex);
         } catch (Exception e) {
-             System.err.println(e.getMessage());
+            System.err.println(e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
