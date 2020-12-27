@@ -5,13 +5,18 @@
  */
 package co.com.intempo.banco.clinteGasDTO;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  *
  * @author Dmoviliza
  */
 public class BodyResponse {
+    
     private ResultadoConsulta resultadoConsulta;
-
+    private Resultado resultado;
+    
+    @XmlElement(name="ResultadoConsulta", namespace = "http://www.servicios.co/pagos/schemas")
     public ResultadoConsulta getResultadoConsulta() {
         return resultadoConsulta;
     }
@@ -20,6 +25,12 @@ public class BodyResponse {
         this.resultadoConsulta = resultadoConsulta;
     }
     
-    
-    
+    @XmlElement(name="Resultado", namespace = "http://www.servicios.co/pagos/schemas")
+    public Resultado getResultado() {
+        return resultado;
+    }
+
+    public void setResultado(Resultado resultado) {
+        this.resultado = resultado;
+    }
 }

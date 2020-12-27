@@ -8,8 +8,10 @@ package co.com.intempo.banco.logica;
 import co.com.intempo.banco.clinteGasDTO.Body;
 import co.com.intempo.banco.clinteGasDTO.Envelope;
 import co.com.intempo.banco.clinteGasDTO.EnvelopeResponse;
+import co.com.intempo.banco.clinteGasDTO.PagoResource;
 import co.com.intempo.banco.clinteGasDTO.ReferenciaFactura;
 import co.com.intempo.banco.dto.MensajeDTO;
+import co.com.intempo.banco.util.Constantes;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -29,8 +31,8 @@ import javax.xml.bind.Unmarshaller;
 public class ClenteGas implements ConeccionClientePago {
 
     public static String URL_AGUA = "http://130.211.116.156:80/gas-service/PagosService";
-
     private static final String ACCION_CONSULTAR = "consultar";
+    private static final String ACCION_PAGAR = "pagar";
 
     @Override
     public Double consultarFactura(Long idFactura) {
@@ -54,7 +56,28 @@ public class ClenteGas implements ConeccionClientePago {
 
     @Override
     public MensajeDTO pagarFactura(Long idFactura, Double valorFactura) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        try {
+            MensajeDTO mensajeDTO= new MensajeDTO();
+            
+            Envelope env = new Envelope();
+            env.setBody(new Body());
+            env.getBody().setPagoResource(new PagoResource());
+            env.getBody().getPagoResource().setReferenciaFactura(new ReferenciaFactura());
+            env.getBody().getPagoResource().getReferenciaFactura().setReferenciaFactura(idFactura.toString());
+            env.getBody().getPagoResource().setTotalPagar(valorFactura);
+
+            EnvelopeResponse response = consumirServicio(env, URL_AGUA, ACCION_PAGAR);
+            if (response == null) {
+                return null;
+            }
+            mensajeDTO.setMensaje(response.getBody().getResultado().getMensaje());
+            mensajeDTO.setCodigoResultado(Constantes.CodigosRespuesta.EXITOSO);
+            return mensajeDTO;
+        } catch (Exception ex) {
+            System.err.println("No se pudo consumir el servicio de consulta de factura");
+            return null;
+        }
     }
 
     private EnvelopeResponse consumirServicio(Envelope request, String endpoint, String accion)

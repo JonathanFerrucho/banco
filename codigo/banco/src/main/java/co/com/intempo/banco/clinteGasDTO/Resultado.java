@@ -11,28 +11,27 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author Dmoviliza
  */
-public class Body {
+public class Resultado {
 
     private ReferenciaFactura referenciaFactura;
-    private PagoResource pagoResource;
+    private String mensaje;
 
-    @XmlElement(name="ReferenciaFactura", namespace = "http://www.servicios.co/pagos/schemas")
+    @XmlElement(name = "referenciaFactura", namespace = "http://www.servicios.co/pagos/schemas")
     public ReferenciaFactura getReferenciaFactura() {
         return referenciaFactura;
     }
-    
+
     public void setReferenciaFactura(ReferenciaFactura referenciaFactura) {
         this.referenciaFactura = referenciaFactura;
     }
-    
-    @XmlElement(name="PagoResource", namespace = "http://www.servicios.co/pagos/schemas")
-    public PagoResource getPagoResource() {
-        return pagoResource;
+
+    @XmlElement(name = "mensaje", namespace = "http://www.servicios.co/pagos/schemas")
+    public String getMensaje() {
+        return mensaje;
     }
 
-    public void setPagoResource(PagoResource pagoResource) {
-        this.pagoResource = pagoResource;
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
-    
-    
+
 }

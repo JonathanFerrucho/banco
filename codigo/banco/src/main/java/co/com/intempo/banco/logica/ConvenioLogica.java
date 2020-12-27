@@ -34,7 +34,6 @@ public class ConvenioLogica {
         return optConvenioDTO.isPresent() ? optConvenioDTO.get() : null;
     }
 
-
     public Double consultarValorFactura(ConvenioDTO convenioDTO, Long idFactura) {
 
         if (convenioDTO.getCompesancionPago()) {
@@ -47,13 +46,13 @@ public class ConvenioLogica {
     }
 
     public MensajeDTO pagarFacTura(ConvenioDTO convenioDTO, Long idFactura, Double valorFactura) {
-        ClenteAgua clenteAgua = new ClenteAgua();
 
         if (convenioDTO.getCompesancionPago()) {
+            ClenteAgua clenteAgua = new ClenteAgua();
             return clenteAgua.pagarFactura(idFactura, valorFactura);
         } else {
-
+            ClenteGas clenteGas = new ClenteGas();
+            return clenteGas.pagarFactura(idFactura, valorFactura);
         }
-        return null;
     }
 }
